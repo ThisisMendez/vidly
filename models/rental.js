@@ -2,9 +2,10 @@ const Joi = require('joi');
 const mongoose = require('mongoose')
 
 const Rental = mongoose.model('Rental', new mongoose.Schema ({ 
-    customer: {
         // this is the customer property it is set to type of new mongoose.Schema that is define here. Not reusing the customer schema that was used in the customers module. 
         // WHY. because the customer can have 50 props. and we don't want to have all props in this object. Only the essential
+
+        customer: {
         type: new mongoose.Schema ({ 
             name: { 
                 type: String, 
@@ -18,7 +19,7 @@ const Rental = mongoose.model('Rental', new mongoose.Schema ({
             }, 
             phone: {
                 type: String, 
-                required: true
+                required: true,
                 minlength: 5, 
                 maxlength: 50
             }
@@ -41,6 +42,8 @@ const Rental = mongoose.model('Rental', new mongoose.Schema ({
                 max: 255
             }
         }), 
+        required: true
+    }, 
         dateOut: { 
             type: Date, 
             required: true, 

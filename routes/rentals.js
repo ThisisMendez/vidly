@@ -2,18 +2,28 @@ const {Rental, validate} = require('../models/rental');
 const {Movie} = require('../models/movie'); 
 const {Customer} = require('../models/customer'); 
 const mongoose = require('mongoose'); 
+const Fawn = require('fawn'); 
 const express = require('express'); 
 const router = express.Router(); 
 
+Fawn.init(mongoose); 
+
+
+//GET 
 router.get('/', async (req, res) => {
     const rentals = await Rental.find().sort('-dateOut'); 
     // sorting in a descending order
     res.send(rentals); 
 }); 
 
+
+// POST 
 router.post('/', async (req, res) => { 
     const { error } = validate(req.body); 
-    if (error) return res status(400).send('Invalid customer.'); 
+    if (error) return res.status(400).send (error.details[0].message); 
+
+    const customer = await Customer.findById(req.body.customerId);
+    if (!customer) return res.status(400).send('Invalid customer.'); 
 
     const movie = await Movie.findById(req.body.movieId); 
     if (!movie) return res.status(400).send('Invalid movie.'); 
@@ -32,18 +42,32 @@ router.post('/', async (req, res) => {
             dailyRentalRate: movie.dailyRentalRate
         }
     }); 
-    rental = await rental save(); 
-    // When we set the rental mongo will automatically set that property
+    // rental = await rental save(); 
+    // // When we set the rental mongo will automatically set that property
 
-    movie.numberInStock--; 
-    movie.save(); 
-    // Problem  there are two sep operations it is possible after we save this rental something goes wrong. Maybe server crashes or the connection to mongoDB drops. So the second operations could not complete. 
-    // Solution: Transaction to ensure both save operations will work in DB or none will be apply. They are automatic. 
-    // Solution: Teq called two face commit (advance topic related to mongo)
+    // movie.numberInStock--; 
+    // movie.save(); 
+    // // Problem  there are two sep operations it is possible after we save this rental something goes wrong. Maybe server crashes or the connection to mongoDB drops. So the second operations could not complete. 
+    // // Solution: Transaction to ensure both save operations will work in DB or none will be apply. They are automatic. 
+    // // Solution: Teq called two face commit (advance topic related to mongo)
+    // Have to wrap in try block 
+
+try { 
+    new Fawn.Task()
+        .save('rentals', rental) // working directly with the collection
+        .update('movies', { _id: movie._id}, { 
+            $inc: { numberInStock: -1}
+        })
+        .run(); //if you don't call run none of the operations will run 
 
     res.send(rental); 
+}
+catch(ex) { 
+    res.status(500).send('Something failed.'); 
+    }
 }); 
 
+//GET 
 router.get('/:id', async (req, res) => { 
     const rental = await Rental.findById(req.params.id); 
 
