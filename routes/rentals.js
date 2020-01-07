@@ -76,4 +76,4 @@ router.get('/:id', async (req, res) => {
     res.send(rental); 
 }); 
 
-router.exports = router; 
+module.exports = router; 
