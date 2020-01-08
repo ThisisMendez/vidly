@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
-const {User, validate} = require('../models/user'); 
+const {User, validate} = require('../models/user'); // To validate a new User
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
@@ -25,4 +25,5 @@ res.send(_.pick(user, ['_id', 'name', 'email']));
 
 module.exports = router; 
 
-
+// The argument we set the number of rounds you want to generate the salt 
+// The salt and hashed are included both because later when you want to authenticate the user you want to validate the username and password
