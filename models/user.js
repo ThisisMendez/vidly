@@ -1,7 +1,9 @@
+const config = require('config'); 
+const jwt = require('jsonwebtoken')
 const Joi = require('joi');
 const mongoose = require('mongoose');
 
-const User = mongoose.model('User', new mongoose.Schema({ 
+const userSchema = new mongoose.Schema({ 
     name:{
         type: String, 
         required: true, 
@@ -21,7 +23,15 @@ const User = mongoose.model('User', new mongoose.Schema({
         minlength: 5, 
         maxlength: 1024
     }
-}));
+}); 
+
+userSchema.methods.generateAuthToken = function() { 
+  const token =jwt.sign({ _id: this._id}, config.get('jwtPrivateKey'));
+  return token; 
+// can not replace syntax with an arrow function because arrow function does not have there own this. If you want to create a method inside of a object you should not use an arrow function 
+}
+
+const User = mongoose.model('User', userSchema );
 
 // Why do you move Schema object
 
@@ -31,7 +41,6 @@ function validateUser(user) {
     email: Joi.string().min(5).max(255).required().email(), 
     password: Joi.string().min(5).max(255).required()
   };
-
   return Joi.validate(user, schema);
 }
 
