@@ -22,11 +22,12 @@ const userSchema = new mongoose.Schema({
         required: true, 
         minlength: 5, 
         maxlength: 1024
-    }
+    }, 
+    isAdmin: Boolean
 }); 
 
 userSchema.methods.generateAuthToken = function() { 
-  const token =jwt.sign({ _id: this._id}, config.get('jwtPrivateKey'));
+  const token =jwt.sign({ _id: this._id, isAdmin: this.isAdmin }, config.get('jwtPrivateKey'));
   return token; 
 // can not replace syntax with an arrow function because arrow function does not have there own this. If you want to create a method inside of a object you should not use an arrow function 
 }

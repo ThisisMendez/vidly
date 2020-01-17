@@ -1,0 +1,7 @@
+Handling an Logging Errors 
+- possiblities connection to MongoDB drops
+    -  Sending a friendly error 
+    - log the exception 
+    - Mongo will try to recconect 30 times with interval 1000ms 
+
+    

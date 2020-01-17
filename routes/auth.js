@@ -21,6 +21,8 @@ router.post('/', async (req, res) => {
   res.send(token);
 });
 
+// logging out features you don't need a separate route for that because you are not storing that on the server. You have to implement the logging out feature on the client and not the server
+
 
 // Information Expert Principle 
   // Object that has enough information and that is an expert in that given area.

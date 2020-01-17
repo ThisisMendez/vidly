@@ -1,3 +1,4 @@
+const auth = require('../middleware/auth');
 const jwt = require('jsonwebtoken'); 
 const config = require('config');
 const bcrypt = require('bcrypt');
@@ -7,6 +8,14 @@ const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 
+
+router.get('/me', auth, async (req, res) => {
+  const user = await User.findById(req.user._id).select('-password');
+  res.send(user);
+});
+
+// for security reason you don't want have a end point with ('/:id') because you can see another user and look at there account. Instead of passing the id property in the path or in the route. You can get through req.user._id , which comes through the JSON web token. 
+// ('-password') allows you to exclude properties 
 
 //POST
 router.post('/', async (req, res) => {
