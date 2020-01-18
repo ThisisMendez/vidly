@@ -5,17 +5,11 @@ const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 
-
 //GET
 router.get('/', async (req, res) => {
-
-try { 
+  throw new Error('Could not get the genres.');
   const genres = await Genre.find().sort('name'); 
   res.send(genres);
-}
-catch (ex) { 
-  res.status(500).send('Something failed.'); 
-}
 });
 
 // POST 
